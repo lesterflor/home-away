@@ -5,7 +5,8 @@ import { clerkClient, currentUser } from '@clerk/nextjs/server';
 //import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { profileSchema } from '@/utils/schema';
+import { profileSchema, validateWithZodSchema } from '@/utils/schema';
+import { revalidatePath } from 'next/cache';
 
 const getAuthUser = async () => {
 	const user = await currentUser();
@@ -21,6 +22,13 @@ const getAuthUser = async () => {
 	return user;
 };
 
+const renderError = (error: unknown): { message: string } => {
+	console.log(error);
+	return {
+		message: error instanceof Error ? error.message : 'An error occured'
+	};
+};
+
 export const createProfileAction = async (
 	prevState: any,
 	formData: FormData
@@ -34,7 +42,7 @@ export const createProfileAction = async (
 
 		const rawData = Object.fromEntries(formData);
 
-		const validatedFields = profileSchema.parse(rawData);
+		const validatedFields = validateWithZodSchema(profileSchema, rawData);
 
 		await db.profile.create({
 			data: {
@@ -51,9 +59,7 @@ export const createProfileAction = async (
 			}
 		});
 	} catch (err) {
-		return {
-			message: err instanceof Error ? err.message : 'An error occured'
-		};
+		return renderError(err);
 	}
 
 	redirect('/');
@@ -95,7 +101,26 @@ export const updateProfileAction = async (
 ): Promise<{
 	message: string;
 }> => {
-	return {
-		message: 'updated profile action'
-	};
+	const user = await getAuthUser();
+
+	try {
+		const rawData = Object.fromEntries(formData);
+
+		const validatedFields = validateWithZodSchema(profileSchema, rawData);
+
+		await db.profile.update({
+			where: {
+				clerkId: user.id
+			},
+			data: validatedFields
+		});
+
+		revalidatePath('/profile');
+
+		return {
+			message: 'Profile updated successfully'
+		};
+	} catch (err: unknown) {
+		return renderError(err);
+	}
 };

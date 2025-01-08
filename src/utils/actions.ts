@@ -1,5 +1,10 @@
 'use server';
 
+import db from './db';
+import { clerkClient, currentUser } from '@clerk/nextjs/server';
+//import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+
 import { profileSchema } from '@/utils/schema';
 
 export const createProfileAction = async (
@@ -7,24 +12,50 @@ export const createProfileAction = async (
 	formData: FormData
 ) => {
 	try {
+		const user = await currentUser();
+
+		if (!user) {
+			throw new Error('Please log in to create profile');
+		}
+
 		const rawData = Object.fromEntries(formData);
 
 		const validatedFields = profileSchema.parse(rawData);
 
-		// const result = profileSchema.safeParse(rawData);
+		await db.profile.create({
+			data: {
+				clerkId: user?.id,
+				email: user.emailAddresses[0].emailAddress,
+				profileImage: user.imageUrl ?? '',
+				...validatedFields
+			}
+		});
 
-		// if (!result.success) {
-		// 	return {
-		// 		errors: result.error.flatten().fieldErrors
-		// 	};
-		// }
-
-		console.log(validatedFields);
-		return {
-			message: 'profile created'
-		};
+		await clerkClient.users.updateUserMetadata(user.id, {
+			privateMetadata: {
+				hasProfile: true
+			}
+		});
 	} catch (err) {
-		console.log(err);
-		return { message: 'there was an error' };
+		return {
+			message: err instanceof Error ? err.message : 'An error occured'
+		};
 	}
+
+	redirect('/');
+};
+
+export const fetchProfileImage = async () => {
+	const user = await currentUser();
+	if (!user) return null;
+
+	const profile = await db.profile.findUnique({
+		where: {
+			clerkId: user.id
+		},
+		select: {
+			profileImage: true
+		}
+	});
+	return profile?.profileImage;
 };

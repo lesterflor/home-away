@@ -1,9 +1,14 @@
 import React from 'react';
 import FormInput from '@/components/form/formInput';
 import FormContainer from '@/components/form/FormContainer';
-import SubmitButton from '@/components/form/Buttons';
-import { updateProfileAction, fetchProfile } from '@/utils/actions';
+import { SubmitButton } from '@/components/form/Buttons';
+import {
+	updateProfileAction,
+	fetchProfile,
+	updateProfileImageAction
+} from '@/utils/actions';
 import { redirect } from 'next/navigation';
+import ImageInputContainer from '@/components/form/ImageInputContainer';
 
 export default async function ProfilePage() {
 	const profile = await fetchProfile();
@@ -16,7 +21,12 @@ export default async function ProfilePage() {
 		<section>
 			<h1 className='text-2xl font-semibold mb-8 capitalize'>User Profile</h1>
 			<div className='border p-8 rounded-md'>
-				{/* image input container */}
+				<ImageInputContainer
+					image={profile.profileImage}
+					name={profile.username}
+					action={updateProfileImageAction}
+					text='Update Profile Image'
+				/>
 				<FormContainer action={updateProfileAction}>
 					<div className='grid md:grid-cols-2 gap-4 mt-4'>
 						<FormInput

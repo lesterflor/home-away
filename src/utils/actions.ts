@@ -11,6 +11,7 @@ import {
 	validateWithZodSchema
 } from '@/utils/schema';
 import { revalidatePath } from 'next/cache';
+import { uploadImage } from './supabase';
 
 const getAuthUser = async () => {
 	const user = await currentUser();
@@ -133,10 +134,27 @@ export const updateProfileImageAction = async (
 	prevState: any,
 	formData: FormData
 ): Promise<{ message: string }> => {
-	const image = formData.get('image') as File;
-	const validateFields = validateWithZodSchema(imageSchema, image);
+	const user = await getAuthUser();
+	try {
+		const image = formData.get('image') as File;
 
-	console.log(validateFields);
+		const validatedFields = validateWithZodSchema(imageSchema, { image });
 
-	return { message: 'Profile image updated successfully' };
+		const fullPath = await uploadImage(validatedFields.image);
+
+		await db.profile.update({
+			where: {
+				clerkId: user.id
+			},
+			data: {
+				profileImage: fullPath
+			}
+		});
+
+		revalidatePath('/profile');
+
+		return { message: 'Profile image updated successfully' };
+	} catch (error) {
+		return renderError(error);
+	}
 };

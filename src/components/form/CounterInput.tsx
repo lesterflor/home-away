@@ -28,8 +28,6 @@ export default function CounterInput({
 
 	return (
 		<Card className='mb-4'>
-			{/* input */}
-			|
 			<input
 				type='hidden'
 				name={detail}

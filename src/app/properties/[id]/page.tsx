@@ -1,3 +1,5 @@
+import FavoriteToggleButton from '@/components/card/FavoriteToggleButton';
+import BreadCrumbs from '@/components/properties/BreadCrumbs';
 import { fetchPropertyDetails } from '@/utils/actions';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -17,5 +19,16 @@ export default async function PropertyDetailsPage({
 
 	const details = { baths, bedrooms, beds, guests };
 
-	return <div>prop detaisl page</div>;
+	return (
+		<section>
+			<BreadCrumbs name={property.name} />
+			<header className='flex justify-between items-center mt-4'>
+				<h1 className='text-4xl font-bold capitalize'>{property.tagline}</h1>
+				<div className='flex items-center gap-4'>
+					{/* share button */}
+					<FavoriteToggleButton propertyId={property.id} />
+				</div>
+			</header>
+		</section>
+	);
 }

@@ -1,7 +1,9 @@
 import FavoriteToggleButton from '@/components/card/FavoriteToggleButton';
 import PropertyRating from '@/components/card/PropertyRating';
+import BookingCalendar from '@/components/properties/booking/BookingCalendar';
 import BreadCrumbs from '@/components/properties/BreadCrumbs';
 import ImageContainer from '@/components/properties/ImageContainer';
+import PropertyDetails from '@/components/properties/PropertyDetails';
 import ShareButton from '@/components/properties/ShareButton';
 import { fetchPropertyDetails } from '@/utils/actions';
 import { redirect } from 'next/navigation';
@@ -27,6 +29,7 @@ export default async function PropertyDetailsPage({
 			<BreadCrumbs name={property.name} />
 			<header className='flex justify-between items-center mt-4'>
 				<h1 className='text-4xl font-bold capitalize'>{property.tagline}</h1>
+
 				<div className='flex items-center gap-4'>
 					{/* share button */}
 					<ShareButton
@@ -45,13 +48,15 @@ export default async function PropertyDetailsPage({
 					<div className='flex gap-x-4 items-center'>
 						<h1 className='text-xl font-bold'>{property.name}</h1>
 						<PropertyRating
-							inPage={true}
+							inPage
 							propertyId={property.id}
 						/>
 					</div>
+					<PropertyDetails details={details} />
 				</div>
 				<div className='lg:col-span-4 flex flex-col items-center'>
 					{/* calendar */}
+					<BookingCalendar />
 				</div>
 			</section>
 		</section>

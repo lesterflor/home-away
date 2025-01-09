@@ -1,4 +1,3 @@
-import { flagSymbol } from './../../node_modules/arg/index.d';
 import countries from 'world-countries';
 
 export const formattedCountries = countries.map((item) => {

@@ -1,5 +1,17 @@
-import React from 'react';
+import { FaHeart } from 'react-icons/fa';
+import { Button } from '@/components/ui/button';
 
-export default function FavoriteToggleButton() {
-	return <div>FavoriteToggleButton</div>;
+export default function FavoriteToggleButton({
+	propertyId
+}: {
+	propertyId: string;
+}) {
+	return (
+		<Button
+			size='icon'
+			variant='outline'
+			className='p-2 cursor-pointer'>
+			<FaHeart />
+		</Button>
+	);
 }

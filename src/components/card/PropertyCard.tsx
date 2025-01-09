@@ -44,10 +44,12 @@ export default function PropertyCard({
 						night
 					</p>
 					{/* country and flag */}
+					<CountryFlagAndName countryCode={country} />
 				</div>
 			</Link>
 			<div className='absolute top-5 z-5 right-5'>
 				{/* favorite toggle button */}
+				<FavoriteToggleButton propertyId={propertyId} />
 			</div>
 		</article>
 	);

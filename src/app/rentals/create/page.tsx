@@ -6,6 +6,9 @@ import { SubmitButton } from '@/components/form/Buttons';
 import PriceInput from '@/components/form/PriceInput';
 import CategoriesInput from '@/components/form/CategoriesInput';
 import TextAreaInput from '@/components/form/TextAreaInput';
+import CountriesInput from '@/components/form/CountriesInput';
+import ImageInput from '@/components/form/ImageInput';
+import CounterInput from '@/components/form/CounterInput';
 
 export default async function CreatePropertyPage() {
 	return (
@@ -39,6 +42,17 @@ export default async function CreatePropertyPage() {
 						name='description'
 						labelText='Description (10-1000) words'
 					/>
+					<div className='grid sm:grid-cols-2 gap-8 mt-4'>
+						<CountriesInput />
+						<ImageInput />
+					</div>
+					<h3 className='text-lg mt-8 mb-4 font-medium'>
+						Accommodation Details
+					</h3>
+					<CounterInput detail='guests' />
+					<CounterInput detail='bedrooms' />
+					<CounterInput detail='beds' />
+					<CounterInput detail='baths' />
 					<SubmitButton
 						text='create rental'
 						className='mt-12'

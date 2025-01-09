@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 import {
 	imageSchema,
 	profileSchema,
+	propertySchema,
 	validateWithZodSchema
 } from '@/utils/schema';
 import { revalidatePath } from 'next/cache';
@@ -154,6 +155,24 @@ export const updateProfileImageAction = async (
 		revalidatePath('/profile');
 
 		return { message: 'Profile image updated successfully' };
+	} catch (error) {
+		return renderError(error);
+	}
+};
+
+export const createPropertyAction = async (
+	prevState: any,
+	formData: FormData
+): Promise<{ message: string }> => {
+	const user = await getAuthUser();
+	try {
+		const rawData = Object.fromEntries(formData);
+
+		const validatedFields = validateWithZodSchema(propertySchema, rawData);
+
+		//redirect('/');
+
+		return { message: 'Property successfully created' };
 	} catch (error) {
 		return renderError(error);
 	}

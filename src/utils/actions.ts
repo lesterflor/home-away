@@ -6,6 +6,7 @@ import { clerkClient, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
 import {
+	createReviewSchema,
 	imageSchema,
 	profileSchema,
 	propertySchema,
@@ -13,6 +14,7 @@ import {
 } from '@/utils/schema';
 import { revalidatePath } from 'next/cache';
 import { uploadImage } from './supabase';
+import { render } from 'react-dom';
 
 const getAuthUser = async () => {
 	const user = await currentUser();
@@ -311,4 +313,66 @@ export const fetchPropertyDetails = async (id: string) => {
 			profile: true
 		}
 	});
+};
+
+export const createReviewAction = async (
+	prevState: any,
+	formData: FormData
+) => {
+	const user = await getAuthUser();
+
+	console.log('formData', formData);
+
+	try {
+		const rawData = Object.fromEntries(formData);
+
+		const validatedFields = validateWithZodSchema(createReviewSchema, rawData);
+
+		console.log('rawData', rawData);
+
+		await db.review.create({
+			data: {
+				profileId: user.id,
+				...validatedFields
+			}
+		});
+
+		revalidatePath(`/properties/${validatedFields.propertyId}`);
+
+		return { message: 'Review Submitted Successfully' };
+	} catch (error: unknown) {
+		return renderError(error);
+	}
+};
+
+export const fetchPropertyReviews = async (propertyId: string) => {
+	const reviews = await db.review.findMany({
+		where: {
+			propertyId
+		},
+		select: {
+			id: true,
+			rating: true,
+			comment: true,
+			profile: {
+				select: {
+					firstName: true,
+					profileImage: true
+				}
+			}
+		},
+		orderBy: {
+			createdAt: 'desc'
+		}
+	});
+
+	return reviews;
+};
+
+export const fetchPropertyReviewsByUser = async () => {
+	return { message: 'fetch user reviews' };
+};
+
+export const deleteReviewAction = async () => {
+	return { message: 'delete  reviews' };
 };

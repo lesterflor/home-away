@@ -14,7 +14,6 @@ import {
 } from '@/utils/schema';
 import { revalidatePath } from 'next/cache';
 import { uploadImage } from './supabase';
-import { render } from 'react-dom';
 
 const getAuthUser = async () => {
 	const user = await currentUser();

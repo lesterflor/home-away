@@ -12,6 +12,16 @@ import { Separator } from '@/components/ui/separator';
 import { fetchPropertyDetails } from '@/utils/actions';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const DynamicMap = dynamic(
+	() => import('@/components/properties/PropertyMap'),
+	{
+		ssr: false,
+		loading: () => <Skeleton className='h-[400px] w-full' />
+	}
+);
 
 export default async function PropertyDetailsPage({
 	params
@@ -66,6 +76,7 @@ export default async function PropertyDetailsPage({
 					<Description description={property.description} />
 
 					<Amenities amenities={property.amenities} />
+					<DynamicMap countryCode={property.country} />
 				</div>
 
 				<div className='lg:col-span-4 flex flex-col items-center'>

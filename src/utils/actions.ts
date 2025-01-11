@@ -505,7 +505,7 @@ export const fetchBookings = async () => {
 			}
 		},
 		orderBy: {
-			checkIn: 'desc'
+			createdAt: 'desc'
 		}
 	});
 	return bookings;
@@ -604,10 +604,66 @@ export const fetchRentalDetails = async (propertyId: string) => {
 	});
 };
 
-export const updatePropertyAction = async () => {
-	return { message: 'update property action' };
+export const updatePropertyAction = async (
+	prevState: any,
+	formData: FormData
+) => {
+	const user = await getAuthUser();
+
+	try {
+		const rawData = Object.fromEntries(formData);
+
+		const propertyId = formData.get('id') as string;
+
+		const validatedFields = validateWithZodSchema(propertySchema, rawData);
+
+		await db.property.update({
+			where: {
+				id: propertyId,
+				profileId: user.id
+			},
+			data: {
+				...validatedFields
+			}
+		});
+
+		revalidatePath(`/rentals/${propertyId}/edit`);
+
+		return { message: 'Successfully Updated Property' };
+	} catch (err: unknown) {
+		return renderError(err);
+	}
 };
 
-export const updatePropertyImageAction = async () => {
-	return { message: 'update property image' };
+export const updatePropertyImageAction = async (
+	prevState: any,
+	formData: FormData
+) => {
+	const user = await getAuthUser();
+
+	try {
+		const image = formData.get('image') as File;
+
+		const propertyId = formData.get('id') as string;
+
+		const validatedFields = validateWithZodSchema(imageSchema, { image });
+
+		const fullPath = await uploadImage(validatedFields.image);
+
+		await db.property.update({
+			where: {
+				id: propertyId,
+				profileId: user.id
+			},
+			data: {
+				image: fullPath
+			}
+		});
+
+		revalidatePath(`/rentals/${propertyId}/edit`);
+
+		return { message: 'Updated Property Image' };
+	} catch (err: unknown) {
+		return renderError(err);
+	}
 };

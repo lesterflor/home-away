@@ -737,7 +737,7 @@ export const fetchChartsData = async () => {
 			createdAt: 'asc'
 		}
 	});
-	let bookingsPerMonth = bookings.reduce((total, current) => {
+	const bookingsPerMonth = bookings.reduce((total, current) => {
 		const date = formatDate(current.createdAt, true);
 
 		const existingEntry = total.find((entry) => entry.date === date);

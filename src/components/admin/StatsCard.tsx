@@ -1,12 +1,12 @@
-type StatsCardProps = {
+type StatsCardsProps = {
 	title: string;
-	value: number;
+	value: number | string;
 };
 
 import React from 'react';
 import { Card, CardHeader } from '../ui/card';
 
-export default function StatsCard({ title, value }: StatsCardProps) {
+export default function StatsCard({ title, value }: StatsCardsProps) {
 	return (
 		<Card className='bg-muted'>
 			<CardHeader className='flex flex-row justify-between items-center'>

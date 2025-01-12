@@ -6,6 +6,7 @@ import { formatDate } from '@/utils/format';
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
 	const requestHeaders = new Headers(req.headers);
+
 	const origin = requestHeaders.get('origin');
 
 	const { bookingId } = await req.json();
